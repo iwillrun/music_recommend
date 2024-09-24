@@ -255,14 +255,13 @@
 用户资料：
 - 喜欢的音乐类型：${user_profile['favorite_genres']}
 - 最近听过的歌曲：
-  ${user_profile['recently_played']}    NOTE:可以为多项数据,使用逗号分隔.
+  ${user_profile['recently_played']}
   - 播放时长：${user_profile['play_duration']}     NOTE:可以为多项数据,单位为秒,使用逗号分隔,与上面歌曲名一一对应.
-  - 跳过频率：${user_profile['skip_frequency']}     NOTE:可以为多项数据,单位为一段时间内的跳过次数,越多代表越不喜欢,使用逗号分隔,与上面歌曲名一一对应.
-  - 重复播放次数：${user_profile['repeat_count']}     NOTE:可以为多项数据,单位为为一段时间内的重复播放次数,越多代表越喜欢,使用逗号分隔,与上面歌曲名一一对应.
-  - 收藏情况：${user_profile['favorites']}  NOTE:可以为多项数据,单位为秒,使用逗号分隔,与上面歌曲名一一对应.
-- 喜欢的歌手：${user_profile['favorite_artists']}   NOTE:可以为多项数据,使用逗号分隔.
-- 喜欢的年代：${user_profile['favorite_era']}   NOTE:可以为多项数据,使用逗号分隔.
-
+  - 跳过频率：${user_profile['skip_frequency']}     NOTE:可以为多项数据,使用逗号分隔,越多代表越不喜欢,与上面歌曲名一一对应.
+  - 重复播放次数：${user_profile['repeat_count']}     NOTE:可以为多项数据,越多代表越喜欢,使用逗号分隔,与上面歌曲名一一对应.
+  - 收藏情况：${user_profile['favorites']}  NOTE:可以为多项数据,使用逗号分隔,与上面歌曲名一一对应.
+- 喜欢的歌手：${user_profile['favorite_artists']}
+- 喜欢的年代：${user_profile['favorite_era']}
 情境信息：
 - 时间：${context['time']}
 - 车速：${context['speed']} NOTE:不同车速对推荐的占比权重会比较高.
@@ -277,14 +276,15 @@
 - 音乐节奏：${context['music_tempo']}
 - 音乐能量：${context['music_energy']}
 
-请推荐5首适合当前情境和用户偏好的歌曲，并提供歌曲名和艺术家名，以及简要的推荐理由。
-
-输出如下JSON格式列表数据：
+请推荐9首适合当前情境和用户偏好的歌曲，并提供歌曲名和艺术家名，以及简要的推荐理由。
+每次尽量不要生成重复的歌曲，因为用户不想听重复的内容，你可以尝试每次内部设置一个不同的随机种子来保证多样性。
+不要对生成结果做任何评论，即便有些歌名看起来很奇怪。
+务必准确输出如下JSON格式列表数据：
 [{
     "song":歌曲名,
     "artist":艺术家,
     "recommend_reason":推荐理由
-}]
+        }]
 `;
 
             const options = {
@@ -298,6 +298,7 @@
                     model: 'deepseek-ai/DeepSeek-V2.5',
                     messages: [
                         { role: 'system', content: prompt }
+
                     ],
                     stream: false,
                     max_tokens: 4096,
@@ -367,7 +368,7 @@
                 artistSpan.className = 'artist';
 
                 const reasonSpan = document.createElement('span');
-                reasonSpan.textContent = ` --- ${recommendation.recommend_reason}`;
+                reasonSpan.textContent = ` - ${recommendation.recommend_reason}`;
                 reasonSpan.className = 'reason';
 
                 li.appendChild(songLink);
