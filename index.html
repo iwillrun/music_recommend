@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能音乐推荐系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            overflow: auto; /* 确保内容溢出时可以滚动 */
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            height: auto; /* 确保容器高度自适应 */
+            overflow: visible; /* 确保内容不会被隐藏 */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .recommendations {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .recommendations h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .recommendations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .recommendations li {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        .recommendations li:hover {
+            background-color: #f0f0f0;
+        }
+        .recommendations li .song {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .recommendations li .song:hover {
+            text-decoration: underline;
+        }
+        .recommendations li .artist {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .recommendations li .reason {
+            color: #555;
+            font-size: 0.9em;
+        }
+        audio {
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>智能音乐推荐系统</h1>
+        <form id="musicForm">
+            <label for="favorite_genres">喜欢的音乐类型(如有多个，使用逗号分隔)：</label>
+            <input type="text" id="favorite_genres" name="favorite_genres" placeholder="例如：Pop, Rock" value="Pop, Rock">
+
+            <label for="recently_played">最近听过的歌曲(如有多首歌，使用逗号分隔)：</label>
+            <input type="text" id="recently_played" name="recently_played" placeholder="例如：Shape of You, Bohemian Rhapsody" value="Shape of You, Bohemian Rhapsody">
+
+            <label for="play_duration">播放时长（秒）(如有多首歌，使用逗号分隔)：</label>
+            <input type="text" id="play_duration" name="play_duration" placeholder="例如：240, 360" value="240, 360">
+
+            <label for="skip_frequency">跳过频率（次）(一段时间内，跳过歌曲的次数，如有多首歌，使用逗号分隔)：</label>
+            <input type="text" id="skip_frequency" name="skip_frequency" placeholder="例如：0, 1" value="0, 1">
+
+            <label for="repeat_count">重复播放次数（次）(一段时间内，重播歌曲的次数，如有多首歌，使用逗号分隔)：</label>
+            <input type="text" id="repeat_count" name="repeat_count" placeholder="例如：3, 1" value="3, 1">
+
+            <label for="favorites">收藏情况（是/否）(如有多首歌，使用逗号分隔)：</label>
+            <input type="text" id="favorites" name="favorites" placeholder="例如：是, 否" value="是, 否">
+
+            <label for="favorite_artists">喜欢的歌手：</label>
+            <input type="text" id="favorite_artists" name="favorite_artists" placeholder="例如：Ed Sheeran, Queen" value="Ed Sheeran, Queen">
+
+            <label for="favorite_era">喜欢的年代：</label>
+            <input type="text" id="favorite_era" name="favorite_era" placeholder="例如：2010s, 1970s" value="2010s, 1970s">
+
+            <label for="time">时间：</label>
+            <input type="text" id="time" name="time" placeholder="例如：14:30" value="14:30">
+
+
+            <label for="speed">车速：</label>
+            <input type="text" id="speed" name="speed" placeholder="例如：70" value="90">            
+
+            <label for="time_period">时间段：</label>
+            <select id="time_period" name="time_period">
+                <option value="早晨">早晨</option>
+                <option value="中午">中午</option>
+                <option value="傍晚">傍晚</option>
+                <option value="深夜">深夜</option>
+            </select>
+
+            <label for="day_type">工作日/周末：</label>
+            <select id="day_type" name="day_type">
+                <option value="工作日">工作日</option>
+                <option value="周末">周末</option>
+            </select>
+
+            <label for="location">地点：</label>
+            <input type="text" id="location" name="location" placeholder="例如：高速公路" value="高速公路">
+
+            <label for="location_type">地点类型：</label>
+            <select id="location_type" name="location_type">
+                <option value="城市">城市</option>
+                <option value="乡村">乡村</option>
+                <option value="高速公路">高速公路</option>
+                <option value="市区">市区</option>
+                <option value="郊区">郊区</option>
+            </select>
+
+            <label for="weather">天气情况：</label>
+            <select id="weather" name="weather">
+                <option value="晴">晴</option>
+                <option value="雨">雨</option>
+                <option value="雪">雪</option>
+                <option value="多云">多云</option>
+            </select>
+
+            <label for="mood">情绪状态：</label>
+            <input type="text" id="mood" name="mood" placeholder="例如：放松" value="放松">
+
+            <label for="mood_intensity">情绪强度：</label>
+            <select id="mood_intensity" name="mood_intensity">
+                <option value="高">高</option>
+                <option value="中">中</option>
+                <option value="低">低</option>
+            </select>
+
+            <label for="activity">当前活动：</label>
+            <select id="activity" name="activity">
+                <option value="驾驶">驾驶</option>
+                <option value="休息">休息</option>
+                <option value="通话">通话</option>
+                <option value="导航">导航</option>
+            </select>
+
+            <label for="music_tempo">音乐节奏：</label>
+            <select id="music_tempo" name="music_tempo">
+                <option value="快节奏">快节奏</option>
+                <option value="慢节奏">慢节奏</option>
+            </select>
+
+            <label for="music_energy">音乐能量：</label>
+            <select id="music_energy" name="music_energy">
+                <option value="高能量">高能量</option>
+                <option value="低能量">低能量</option>
+            </select>
+
+            <button type="submit" id="submitButton">生成推荐音乐</button>
+        </form>
+
+        <div class="recommendations" id="recommendations">
+            <h2>推荐歌曲</h2>
+            <ul id="recommendationList"></ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('musicForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submitButton');
+            submitButton.textContent = '推荐音乐生成中...';
+            submitButton.disabled = true;
+
+            const user_profile = {
+                favorite_genres: document.getElementById('favorite_genres').value,
+                recently_played: document.getElementById('recently_played').value,
+                play_duration: document.getElementById('play_duration').value,
+                skip_frequency: document.getElementById('skip_frequency').value,
+                repeat_count: document.getElementById('repeat_count').value,
+                favorites: document.getElementById('favorites').value,
+                favorite_artists: document.getElementById('favorite_artists').value,
+                favorite_era: document.getElementById('favorite_era').value
+            };
+
+            const context = {
+                time: document.getElementById('time').value,
+                speed: document.getElementById('speed').value,
+                time_period: document.getElementById('time_period').value,
+                day_type: document.getElementById('day_type').value,
+                location: document.getElementById('location').value,
+                location_type: document.getElementById('location_type').value,
+                weather: document.getElementById('weather').value,
+                mood: document.getElementById('mood').value,
+                mood_intensity: document.getElementById('mood_intensity').value,
+                activity: document.getElementById('activity').value,
+                music_tempo: document.getElementById('music_tempo').value,
+                music_energy: document.getElementById('music_energy').value
+            };
+
+            const prompt = `你是一个智能音乐推荐助手。根据以下用户资料和情境信息，推荐几首适合的歌曲：
+
+用户资料：
+- 喜欢的音乐类型：${user_profile['favorite_genres']}
+- 最近听过的歌曲：
+  ${user_profile['recently_played']}    NOTE:可以为多项数据,使用逗号分隔.
+  - 播放时长：${user_profile['play_duration']}     NOTE:可以为多项数据,单位为秒,使用逗号分隔,与上面歌曲名一一对应.
+  - 跳过频率：${user_profile['skip_frequency']}     NOTE:可以为多项数据,单位为一段时间内的跳过次数,越多代表越不喜欢,使用逗号分隔,与上面歌曲名一一对应.
+  - 重复播放次数：${user_profile['repeat_count']}     NOTE:可以为多项数据,单位为为一段时间内的重复播放次数,越多代表越喜欢,使用逗号分隔,与上面歌曲名一一对应.
+  - 收藏情况：${user_profile['favorites']}  NOTE:可以为多项数据,单位为秒,使用逗号分隔,与上面歌曲名一一对应.
+- 喜欢的歌手：${user_profile['favorite_artists']}   NOTE:可以为多项数据,使用逗号分隔.
+- 喜欢的年代：${user_profile['favorite_era']}   NOTE:可以为多项数据,使用逗号分隔.
+
+情境信息：
+- 时间：${context['time']}
+- 车速：${context['speed']} NOTE:不同车速对推荐的占比权重会比较高.
+- 时间段：${context['time_period']}
+- 工作日/周末：${context['day_type']}
+- 地点：${context['location']}
+- 地点类型：${context['location_type']}
+- 天气情况：${context['weather']}
+- 情绪状态：${context['mood']}
+- 情绪强度：${context['mood_intensity']}
+- 当前活动：${context['activity']}
+- 音乐节奏：${context['music_tempo']}
+- 音乐能量：${context['music_energy']}
+
+请推荐5首适合当前情境和用户偏好的歌曲，并提供歌曲名和艺术家名，以及简要的推荐理由。
+输出如下JSON格式：
+{
+    "song":歌曲名,
+    "artist":艺术家,
+    "recommend_reason":推荐理由
+}
+`;
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    authorization: 'Bearer sk-xspegerghvkabjoaobsibvhjwbzlurvpesdgzrnnsrpdbkhh'
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-ai/DeepSeek-V2.5',
+                    messages: [
+                        { role: 'system', content: prompt }
+                    ],
+                    stream: false,
+                    max_tokens: 4096,
+                    temperature: 0.7,
+                    top_p: 0.7,
+                    top_k: 50,
+                    frequency_penalty: 0.5,
+                    n: 1
+                })
+            };
+
+            fetch('https://api.siliconflow.cn/v1/chat/completions', options)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应失败');
+                    }
+                    return response.json();
+                })
+                .then(response => {
+                    const recommendations = parseRecommendations(response);
+                    displayRecommendations(recommendations);
+                    submitButton.textContent = '生成推荐音乐';
+                    submitButton.disabled = false;
+                })
+                .catch(err => {
+                    console.error('获取推荐结果时出错:', err);
+                    alert('获取推荐结果时出错，请稍后再试。');
+                    submitButton.textContent = '生成推荐音乐';
+                    submitButton.disabled = false;
+                });
+        });
+
+        function parseRecommendations(response) {
+            // 这里可以根据实际的API响应格式解析推荐结果
+            // 假设API返回的推荐结果是一个包含歌曲信息的JSON数组
+            try {
+                const content = response.choices[0].message.content;
+                const jsonStart = content.indexOf('[');
+                const jsonEnd = content.lastIndexOf(']') + 1;
+                const jsonString = content.substring(jsonStart, jsonEnd);
+                const recommendations = JSON.parse(jsonString);
+                console.log('解析结果:', recommendations); // 打印解析结果
+                return recommendations;
+            } catch (error) {
+                console.error('解析推荐结果时出错:', error);
+                return [];
+            }
+        }
+
+        function displayRecommendations(recommendations) {
+            const recommendationList = document.getElementById('recommendationList');
+            recommendationList.innerHTML = '';
+
+            recommendations.forEach(recommendation => {
+                const li = document.createElement('li');
+                const songLink = document.createElement('a');
+                songLink.href = '#';
+                songLink.textContent = recommendation.song;
+                songLink.className = 'song';
+                songLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    playSong(recommendation.song);
+                });
+
+                const artistSpan = document.createElement('span');
+                artistSpan.textContent = ` by ${recommendation.artist}`;
+                artistSpan.className = 'artist';
+
+                const reasonSpan = document.createElement('span');
+                reasonSpan.textContent = ` - ${recommendation.recommend_reason}`;
+                reasonSpan.className = 'reason';
+
+                li.appendChild(songLink);
+                li.appendChild(artistSpan);
+                li.appendChild(reasonSpan);
+                recommendationList.appendChild(li);
+            });
+        }
+
+        function playSong(songName) {
+            const searchUrl = `https://api.no0a.cn/api/cloudmusic/search/${encodeURIComponent(songName)}`;
+            fetch(searchUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 1 && data.results.length > 0) {
+                        const songId = data.results[0].id;
+                        const songUrl = `https://api.no0a.cn/api/cloudmusic/url/${songId}`;
+                        return fetch(songUrl);
+                    } else {
+                        throw new Error('未找到歌曲');
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 1) {
+                        // 创建播放器界面
+                        const playerContainer = document.createElement('div');
+                        playerContainer.style.position = 'fixed';
+                        playerContainer.style.top = '50%';
+                        playerContainer.style.left = '50%';
+                        playerContainer.style.transform = 'translate(-50%, -50%)';
+                        playerContainer.style.backgroundColor = '#fff';
+                        playerContainer.style.padding = '20px';
+                        playerContainer.style.borderRadius = '8px';
+                        playerContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+                        playerContainer.style.zIndex = '1000';
+                        playerContainer.style.width = '400px'; // 增加宽度
+                        playerContainer.style.height = '200px'; // 增加高度
+        
+                        const audioElement = document.createElement('audio');
+                        audioElement.src = data.musicurl;
+                        audioElement.controls = true;
+                        audioElement.autoplay = true;
+                        audioElement.style.width = '100%'; // 使音频控件宽度占满容器
+        
+                        const closeButton = document.createElement('button');
+                        closeButton.textContent = '关闭';
+                        closeButton.style.marginTop = '10px';
+                        closeButton.style.width = '100%';
+                        closeButton.style.padding = '10px';
+                        closeButton.style.backgroundColor = '#dc3545';
+                        closeButton.style.color = '#fff';
+                        closeButton.style.border = 'none';
+                        closeButton.style.borderRadius = '4px';
+                        closeButton.style.cursor = 'pointer';
+                        closeButton.addEventListener('click', () => {
+                            playerContainer.remove();
+                        });
+        
+                        playerContainer.appendChild(audioElement);
+                        playerContainer.appendChild(closeButton);
+                        document.body.appendChild(playerContainer);
+                    } else {
+                        throw new Error('无法获取歌曲播放链接');
+                    }
+                })
+                .catch(err => {
+                    console.error('播放歌曲时出错:', err);
+                    alert('播放歌曲时出错，请稍后再试。');
+                });
+        }
+    </script>
+</body>
+</html>
