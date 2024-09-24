@@ -278,7 +278,7 @@
 - 音乐能量：${context['music_energy']}
 
 请推荐10首适合当前情境和用户偏好的歌曲，并提供歌曲名和艺术家名，以及简要的推荐理由。
-输出如下JSON格式：
+输出10条推荐结果，如下JSON格式：
 {
     "song":歌曲名,
     "artist":艺术家,
@@ -366,7 +366,7 @@
                 artistSpan.className = 'artist';
 
                 const reasonSpan = document.createElement('span');
-                reasonSpan.textContent = ` - ${recommendation.recommend_reason}`;
+                reasonSpan.textContent = ` --- ${recommendation.recommend_reason}`;
                 reasonSpan.className = 'reason';
 
                 li.appendChild(songLink);
