@@ -278,12 +278,13 @@
 - 音乐能量：${context['music_energy']}
 
 请推荐5首适合当前情境和用户偏好的歌曲，并提供歌曲名和艺术家名，以及简要的推荐理由。
-输出如下JSON格式：
-{
+
+输出如下JSON格式列表数据：
+[{
     "song":歌曲名,
     "artist":艺术家,
     "recommend_reason":推荐理由
-}
+}]
 `;
 
             const options = {
@@ -300,10 +301,10 @@
                     ],
                     stream: false,
                     max_tokens: 4096,
-                    temperature: 0.9,
+                    temperature: 0.8,
                     top_p: 0.9,
                     top_k: 50,
-                    frequency_penalty: 0.8,
+                    frequency_penalty: 0.5,
                     n: 1
                 })
             };
